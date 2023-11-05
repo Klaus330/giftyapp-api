@@ -84,11 +84,17 @@ class WishRepository
             $query = Category::where('id', $filters['category'])->first()->wishes();
         }
 
+
         if (!empty($sorters)) {
             $query->orderBy($sorters['sorters'], $sorters['type'] ?? "asc");
+        } else {
+            $query
+                ->orderBy('is_favorite', 'DESC')
+                ->orderBy('is_claimed');
         }
 
-        return $query->paginate(10);
+        return $query
+            ->paginate(10);
     }
 
     /**
