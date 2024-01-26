@@ -25,7 +25,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
-Route::middleware('auth:sanctum')->get('/wishes/{userId}', [WishController::class, 'wishes']);
+Route::get('/wishes/public/{path}', [WishController::class, 'getWishImagePath'])->where('path', '.+')->name('wish.image');
+Route::get('/wishes/{userId}', [WishController::class, 'wishes']);
 Route::middleware('auth:sanctum')->post('/wishes/{userId}/add', [WishController::class, 'saveWish']);
 Route::middleware('auth:sanctum')->post('/wishes/{userId}/delete', [WishController::class, 'deleteWish']);
 Route::middleware('auth:sanctum')->post('/wishes/{userId}/claim', [WishController::class, 'claimWish']);
@@ -34,5 +35,4 @@ Route::middleware('auth:sanctum')->post('/wishes/{userId}/toggle-favorite', [Wis
 Route::middleware('auth:sanctum')->put('/wishes/{userId}/update', [WishController::class, 'update']);
 
 Route::middleware('auth:sanctum')->get('/account/claimed-wishes', [UserController::class, 'userClaimedWishes']);
-
 Route::middleware('auth:sanctum')->post('/account/update', [UserController::class, 'update']);

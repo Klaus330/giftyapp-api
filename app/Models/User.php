@@ -54,4 +54,9 @@ class User extends Authenticatable
 
         return asset(Storage::url('images/' . $key));
     }
+
+    public function friends()
+    {
+        return $this->hasMany(Friend::class, 'owner_id');
+    }
 }

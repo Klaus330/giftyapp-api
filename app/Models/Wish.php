@@ -55,7 +55,8 @@ class Wish extends Model
         if (empty($key)) {
             return $key;
         }
-        return asset(Storage::url('images/' . $key));
+
+        return route('wish.image', $key, false);
     }
 
     public function isClaimable(int $userId): bool

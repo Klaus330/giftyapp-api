@@ -119,7 +119,7 @@ class WishRepository
         if (isset($data['image'])) {
             Storage::delete('images/' . $wish->image);
             $filename = uniqid() . '.' . File::extension($data['image']->getClientOriginalName());
-            $success = Storage::disk('local')->put("images/{$filename}", $data['image']);
+            $success = Storage::disk('public')->put("images/{$filename}", $data['image']);
 
             if ($success) {
                 $dataToUpdate['image'] = $filename;
@@ -145,11 +145,10 @@ class WishRepository
         }
 
         if (isset($data['image'])) {
-            $filename = uniqid() . '.' . File::extension($data['image']->getClientOriginalName());
-            $success = Storage::disk('local')->put("images/{$filename}", $data['image']);
+            $path = Storage::putFile("images", $data['image']);
 
-            if ($success) {
-                $wish->image = $filename;
+            if ($path) {
+                $wish->image = $path;
                 $wish->save();
             }
         }

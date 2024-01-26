@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Repository\CategoryRepository;
 use App\Http\Repository\WishRepository;
+use App\Models\User;
 use App\Models\Wish;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class WishController extends Controller
 {
@@ -52,18 +55,21 @@ class WishController extends Controller
             $sorters['type'] = $request->query->get('sort_type');
         }
 
-         if ($request->query->has('category')) {
+        if ($request->query->has('category')) {
             $filters['category'] = $request->query->get('category');
         }
 
         $wishes = $this->wishRepository->findWishesFor($userId, $filters, $sorters);
+        $token = trim($request->bearerToken(), '\"');
+        $accessToken = PersonalAccessToken::findToken($token);
 
         return response()->json([
             'status' => 200,
             'data' => [
                 'wishes' => $wishes,
                 'categories' => $this->categoryRepo->findAll(),
-                'is_owner' => auth()->user()->id === $userId
+                'is_owner' => $accessToken !== null && $accessToken->tokenable(),
+                'owner' => User::find($userId)
             ],
             'error' => []
         ]);
@@ -211,5 +217,13 @@ class WishController extends Controller
             ],
             "errors" => []
         ]);
+    }
+
+    public function getWishImagePath(string $path)
+    {
+        $image = Storage::get($path);
+
+        return response($image, 200)
+               ->header("Content-Type", Storage::mimeType($path));
     }
 }
